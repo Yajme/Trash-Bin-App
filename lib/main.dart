@@ -12,6 +12,8 @@ import 'package:trash_bin_app/model/constants.dart';
 //TODO: Implement QR scanning for trash disposal
 //TODO: Create page for registering the users
 
+//* For API Documentation : https://github.com/Yajme/trash-bin-api/?tab=readme-ov-file#trash-bin-api
+//* API LINK: https://trash-bin-api.vercel.app/
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
