@@ -61,7 +61,7 @@ class _StateLogin extends State<Login> {
         // Handle the response, e.g., navigate to another screen
         // You can also store any token or user data returned by the API
         print('Login successful: ${responseData['message']}');
-        setGlobals(responseData);
+        await setGlobals(responseData);
       } else {
         // Login failed
         final errorData = jsonDecode(response.body);
@@ -82,7 +82,7 @@ class _StateLogin extends State<Login> {
     }
   }
 
-void setGlobals(dynamic data) async {
+Future setGlobals(dynamic data) async {
   final pref = await SharedPreferences.getInstance();
 setState(() {
 
