@@ -1,4 +1,6 @@
 library my_prj.globals;
+import 'dart:convert';
+
 import 'package:trash_bin_app/api/firebase_api.dart';
 String token = 'fcmToken';
 String role = '';
@@ -30,6 +32,25 @@ class User {
     this.name,
     this.phoneNumber =''
   });
+
+  static User fromMap(Map<String, dynamic> data){
+    return User(
+    address: data['address'],
+    birthday: data['birthday'],
+    name: Name(first: data['name']['first'], last: data['name']['last']),
+    );
+  }
+
+  Map<String, dynamic> toJson(){
+    return {
+      'address' : address,
+      'birthday' : birthday,
+      'name': {
+        'first' : name!.first,
+        'last' : name!.last
+      }
+    };
+  }
 }
 
 class Name {
