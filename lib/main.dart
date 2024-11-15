@@ -3,10 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trash_bin_app/api/firebase_api.dart';
 import 'package:trash_bin_app/pages/home.dart';
+import 'package:trash_bin_app/pages/admin_home.dart';
 import 'package:trash_bin_app/pages/login.dart';
+import 'package:trash_bin_app/pages/qrscan.dart';
+import 'package:trash_bin_app/pages/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_bin_app/model/constants.dart';
-
+import 'package:trash_bin_app/model/globals.dart' as global;
 //TODO: Create a separate file for user and admins
 //TODO: Enable camera permissions for qr scanning
 //TODO: Implement QR scanning for trash disposal
@@ -24,7 +27,7 @@ Future main() async {
         messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? "",
         projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? ""),
   );
-  //await FirebaseApi().initNotifications();
+  await FirebaseApi().initNotifications();
   runApp(const MainApp());
 }
 
@@ -37,7 +40,7 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   //* Set this to false to access the Login Page
-  bool isLoggedIn = true;
+  bool isLoggedIn = false;
   @override
   void initState() {
     super.initState();
@@ -69,23 +72,23 @@ class _MainAppState extends State<MainApp> {
       debugShowCheckedModeBanner: false,
       //* If the [isLoggedIn] is set to true, the initial page will be set to the main page
       //* Otherwise the page will be redirected to login
-      initialRoute: isLoggedIn ? '/main' : '/login',
+      initialRoute: isLoggedIn ? '/${global.role}' : '/login',
       routes: {
-        '/main': (context) => const MainScaffolding(),
+        '/user': (context) => const UserMainScaffolding(),
+        '/admin' : (context) => const AdminMainScaffolding(),
         '/login': (context) => Login(),
         //TODO: Add more routes here especially for admin
       },
     );
   }
 }
-
-class MainScaffolding extends StatefulWidget {
-  const MainScaffolding({super.key});
+class AdminMainScaffolding extends StatefulWidget {
+  const AdminMainScaffolding({super.key});
   @override
-  State<MainScaffolding> createState() => _StateMainScaffolding();
+  State<AdminMainScaffolding> createState() => _StateAdminMainScaffolding();
 }
 
-class _StateMainScaffolding extends State<MainScaffolding> {
+class _StateAdminMainScaffolding extends State<AdminMainScaffolding> {
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -93,10 +96,10 @@ class _StateMainScaffolding extends State<MainScaffolding> {
         resizeToAvoidBottomInset: false,
         body: IndexedStack(
           index: _selectedIndex,
-          children: _pages,
+          children: _adminPages,
         ),
         bottomNavigationBar: BottomNavigationBar(
-          items: bottomNavBarItems,
+          items: adminBottomNavBarItems,
           currentIndex: _selectedIndex,
           //* Whenever an icon is pressed, the [index] of the bottomNavigation is set to [_selectedIndex]
           //* which will change the page in the scaffolding
@@ -109,14 +112,57 @@ class _StateMainScaffolding extends State<MainScaffolding> {
         ));
   }
 }
+class UserMainScaffolding extends StatefulWidget {
+  const UserMainScaffolding({super.key});
+  @override
+  State<UserMainScaffolding> createState() => _StateUserMainScaffolding();
+}
 
-final List<Widget> _pages = [
-  Home(),
-  Home(), //TODO: Change to QR Page, also create a QR Page
-  Home(), //TODO: Change to Profile Page
+class _StateUserMainScaffolding extends State<UserMainScaffolding> {
+  int _selectedIndex = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _userPages,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: userBottomNavBarItems,
+          currentIndex: _selectedIndex,
+          //* Whenever an icon is pressed, the [index] of the bottomNavigation is set to [_selectedIndex]
+          //* which will change the page in the scaffolding
+          //* The pages is based on the List of pages
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ));
+  }
+}
+final List<Widget> _adminPages = [
+  AdminHome(), 
+  Profile(), 
 ];
-const List<BottomNavigationBarItem> bottomNavBarItems = [
+const List<BottomNavigationBarItem> adminBottomNavBarItems = [
+   BottomNavigationBarItem(
+    icon: Icon(Icons.home),
+    label: 'Home',
+  ),
   BottomNavigationBarItem(
+    icon: Icon(Icons.person),
+    label: 'Profile',
+  ),
+];
+final List<Widget> _userPages = [
+  Home(), //*Replace the Scaffold to more appropriate page for handling undefined role
+  QRScan(), 
+  Profile(), 
+];
+const List<BottomNavigationBarItem> userBottomNavBarItems = [
+   BottomNavigationBarItem(
     icon: Icon(Icons.home),
     label: 'Home',
   ),
