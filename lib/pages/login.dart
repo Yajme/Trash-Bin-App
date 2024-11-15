@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_bin_app/model/globals.dart' as global;
 import 'package:trash_bin_app/model/constants.dart';
 import 'package:http/http.dart' as http;
@@ -77,6 +78,42 @@ class _StateLogin extends State<Login> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  void setGlobals(dynamic data) async {
+    final pref = await SharedPreferences.getInstance();
+    setState(() {
+      global.role = data['role'];
+      global.user_id = data['user_id'];
+
+      //Setting pref as cache
+      pref.setBool('isLoggedIn', true);
+      pref.setString('role', global.role);
+      pref.setString('user_id', global.user_id);
+      pref.setString('token', global.token);
+      if (data['role'] == 'user') {
+        //Setting an instance of object Name
+        final name = global.Name(
+            first: data['name']['first'], last: data['name']['last']);
+        //Setting user
+        global.user = global.User(
+          address: data['address'],
+          birthday: data['birthday'],
+          name: name,
+        );
+        pref.setString('user', jsonEncode(global.user!.toJson()));
+      }
+    });
+    changePage();
+  }
+
+  void changePage() {
+    if (global.role == 'user') {
+      Navigator.pushReplacementNamed(context, '/user');
+    }
+    if (global.role == 'admin') {
+      Navigator.pushReplacementNamed(context, '/admin');
     }
   }
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -45,7 +46,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     //! InitPref() is commented out for development purposes
-    //initPref();
+    initPref();
   }
 
   Future initPref() async {
@@ -53,6 +54,15 @@ class _MainAppState extends State<MainApp> {
 
     setState(() {
       isLoggedIn = pref.getBool('isLoggedIn') ?? false;
+      if (isLoggedIn) {
+        //Set Global Variables here
+        global.user_id = pref.getString('user_id') ?? '';
+        global.token = pref.getString('token') ?? '';
+        global.role = pref.getString('role') ?? '';
+        var userData =
+            Map<String, dynamic>.from(jsonDecode(pref.getString('user')!));
+        global.user = global.User.fromMap(userData);
+      }
     });
   }
 
@@ -75,13 +85,14 @@ class _MainAppState extends State<MainApp> {
       initialRoute: isLoggedIn ? '/${global.role}' : '/login',
       routes: {
         '/user': (context) => const UserMainScaffolding(),
-        '/admin' : (context) => const AdminMainScaffolding(),
+        '/admin': (context) => const AdminMainScaffolding(),
         '/login': (context) => Login(),
         //TODO: Add more routes here especially for admin
       },
     );
   }
 }
+
 class AdminMainScaffolding extends StatefulWidget {
   const AdminMainScaffolding({super.key});
   @override
@@ -112,6 +123,7 @@ class _StateAdminMainScaffolding extends State<AdminMainScaffolding> {
         ));
   }
 }
+
 class UserMainScaffolding extends StatefulWidget {
   const UserMainScaffolding({super.key});
   @override
@@ -142,12 +154,13 @@ class _StateUserMainScaffolding extends State<UserMainScaffolding> {
         ));
   }
 }
+
 final List<Widget> _adminPages = [
-  AdminHome(), 
-  Profile(), 
+  AdminHome(),
+  Profile(),
 ];
 const List<BottomNavigationBarItem> adminBottomNavBarItems = [
-   BottomNavigationBarItem(
+  BottomNavigationBarItem(
     icon: Icon(Icons.home),
     label: 'Home',
   ),
@@ -158,11 +171,11 @@ const List<BottomNavigationBarItem> adminBottomNavBarItems = [
 ];
 final List<Widget> _userPages = [
   Home(), //*Replace the Scaffold to more appropriate page for handling undefined role
-  QRScan(), 
-  Profile(), 
+  QRScan(),
+  Profile(),
 ];
 const List<BottomNavigationBarItem> userBottomNavBarItems = [
-   BottomNavigationBarItem(
+  BottomNavigationBarItem(
     icon: Icon(Icons.home),
     label: 'Home',
   ),
