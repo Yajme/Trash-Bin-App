@@ -2,23 +2,20 @@ library my_prj.globals;
 import 'dart:convert';
 
 import 'package:trash_bin_app/api/firebase_api.dart';
-String token = 'fcmToken';
+
+String token = '';
 String role = '';
 String user_id = '';
 User? user;
 
-
 clearGlobals() async {
-
-await FirebaseApi().deleteToken();
-token = '';
-role = '';
-user_id = '';
-user = null;
-token = await FirebaseApi().getToken();
+  await FirebaseApi().deleteToken();
+  token = '';
+  role = '';
+  user_id = '';
+  user = null;
+  token = await FirebaseApi().getToken();
 }
-
-
 
 class User {
   String address;
@@ -54,15 +51,12 @@ class User {
 }
 
 class Name {
-final String first;
-final String last;
+  final String first;
+  final String last;
 
-Name({
-  required this.first,
-  required this.last
-});
+  Name({required this.first, required this.last});
 
-getFullName(){
-  return '$first $last';
-}
+  getFullName() {
+    return '$first $last';
+  }
 }
