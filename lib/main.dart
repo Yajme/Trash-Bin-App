@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -45,7 +47,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     //! InitPref() is commented out for development purposes
-    //initPref();
+    initPref();
   }
 
   Future initPref() async {
@@ -53,7 +55,16 @@ class _MainAppState extends State<MainApp> {
 
     setState(() {
       isLoggedIn = pref.getBool('isLoggedIn') ?? false;
-    });
+      if(isLoggedIn){
+      //Set Global Variables here
+      global.user_id = pref.getString('user_id') ?? '';
+      global.token = pref.getString('token') ?? '';
+      global.role = pref.getString('role') ?? '';
+      var userData = Map<String, dynamic>.from(jsonDecode(pref.getString('user')!));
+      global.user = global.User.fromMap(userData);
+      }
+      
+     });
   }
 
   @override
