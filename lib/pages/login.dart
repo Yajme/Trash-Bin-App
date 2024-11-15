@@ -60,6 +60,7 @@ class _StateLogin extends State<Login> {
         // Handle the response, e.g., navigate to another screen
         // You can also store any token or user data returned by the API
         print('Login successful: ${responseData['message']}');
+        setGlobals(responseData);
       } else {
         // Login failed
         final errorData = jsonDecode(response.body);
@@ -67,9 +68,11 @@ class _StateLogin extends State<Login> {
           _errorMessage = errorData['message'] ?? 'Login failed';
         });
       }
-    } catch (error) {
+    } catch (error, stack) {
       setState(() {
-        _errorMessage = 'An error occurred: $error';
+        _errorMessage = 'An error occurred: $error ';
+        print(stack);
+
       });
     } finally {
       setState(() {
@@ -78,6 +81,26 @@ class _StateLogin extends State<Login> {
     }
   }
 
+void setGlobals(dynamic data){
+setState(() {
+  if(data['role'] == 'user'){
+final name = global.Name(first: data['name']['first'], last: data['name']['last']);
+  global.user = global.User(
+    address: data['address'],
+    birthday: data['birthday'],
+    name: name,
+    );
+  }
+  global.role = data['role'];
+  global.user_id = data['user_id'];
+});
+if(global.role =='user'){
+Navigator.pushReplacementNamed(context, '/user');
+}
+if(global.role =='admin'){
+  Navigator.pushReplacementNamed(context, '/admin');
+}
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
