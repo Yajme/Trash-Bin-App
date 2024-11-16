@@ -1,5 +1,7 @@
 library my_prj.globals;
 
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_bin_app/api/firebase_api.dart';
 
 String token = '';
@@ -8,12 +10,14 @@ String user_id = '';
 User? user;
 
 clearGlobals() async {
+  final pref = await SharedPreferences.getInstance();
+  pref.clear();
   await FirebaseApi().deleteToken();
   token = '';
   role = '';
   user_id = '';
   user = null;
-  token = await FirebaseApi().getToken();
+  await FirebaseApi().getToken();
 }
 
 class User {

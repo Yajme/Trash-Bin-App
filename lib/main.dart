@@ -49,8 +49,9 @@ class _MainAppState extends State<MainApp> {
     initPref();
   }
 
-  Future initPref() async {
+ Future<void> initPref()  async {
     final pref = await SharedPreferences.getInstance();
+
 
     setState(() {
       isLoggedIn = pref.getBool('isLoggedIn') ?? false;
@@ -82,7 +83,11 @@ class _MainAppState extends State<MainApp> {
       debugShowCheckedModeBanner: false,
       //* If the [isLoggedIn] is set to true, the initial page will be set to the main page
       //* Otherwise the page will be redirected to login
-      initialRoute: isLoggedIn ? '/${global.role}' : '/login',
+      home: isLoggedIn
+        ? global.role == 'admin'
+            ? const AdminMainScaffolding()
+            : const UserMainScaffolding()
+        : Login(),
       routes: {
         '/user': (context) => const UserMainScaffolding(),
         '/admin': (context) => const AdminMainScaffolding(),
