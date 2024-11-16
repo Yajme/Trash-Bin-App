@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:trash_bin_app/model/globals.dart' as global;
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Home extends StatefulWidget {
@@ -9,38 +9,254 @@ class Home extends StatefulWidget {
 }
 
 class _StateHome extends State<Home> {
-  String firstName = '';
-  String lastName = '';
+  final String userId = global.user_id;
+  String largestCategory = "";
+  double largestPoint = 0.0;
+  double recentPoints = 0.0;
+  double currentPoints = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    getWasteRecords();
   }
 
-  Future<void> _fetchUserData() async {
-    final userId = global.user_id;
-    final url =
-        Uri.parse('https://trash-bin-api.vercel.app/user/all?user_id=$userId');
+  Future<void> getWasteRecords() async {
+    final userId = global.user_id; // Ensure this is set correctly
+    if (userId == null) {
+      print('Error: userId is null.');
+      return;
+    }
+
+    final url = Uri.parse(
+        'https://trash-bin-api.vercel.app/waste/records?user_id=$userId');
+    print('Fetching data from: $url');
 
     try {
       final response = await http.get(url);
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        setState(() {
-          firstName = data['first_name'] ?? 'User'; // Default to 'User' if null
-          lastName = data['last_name'] ?? '';
-        });
+        // Decode the response body as a List
+        final List<dynamic> dataList = json.decode(response.body);
+
+        if (dataList.isNotEmpty) {
+          // Example to calculate the required fields
+          String largestCategory = "N/A";
+          double largestPoint = 0.0;
+          double recentPoints = 0.0;
+          double currentPoints = 0.0;
+
+          // Process data to calculate required values
+          for (var record in dataList) {
+            if (record['points'] is num &&
+                (record['points'] as num).toDouble() > largestPoint) {
+              largestPoint = (record['points'] as num).toDouble();
+              largestCategory = record['category'];
+            }
+            recentPoints += (record['points'] as num?)?.toDouble() ?? 0.0;
+          }
+          currentPoints =
+              recentPoints; // Adjust logic for current points if necessary
+
+          if (mounted) {
+            setState(() {
+              this.largestCategory = largestCategory;
+              this.largestPoint = largestPoint;
+              this.recentPoints = recentPoints;
+              this.currentPoints = currentPoints;
+            });
+            print('Data fetched and updated successfully.');
+          }
+        } else {
+          print('No records found.');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No records found.')),
+            );
+          }
+        }
       } else {
-        print('Failed to load user data');
+        print('Failed to fetch records. Status code: ${response.statusCode}');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Failed to fetch records: ${response.statusCode}')),
+          );
+        }
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error occurred: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error occurred: $e')),
+        );
+      }
     }
   }
 
-  final userId = global.user_id;
+  final name = global.user?.name?.getFullName();
+  final double availablePoints = 100.32; // Example available points
+  final TextEditingController _pointsController = TextEditingController();
+
+  void _showRedeemPopup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Redeem Points'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'You are about to redeem your points. Enter the amount below:',
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _pointsController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Points to Redeem',
+                  hintText: 'Enter points',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the popup
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final input = _pointsController.text;
+                if (input.isEmpty) {
+                  _showError('Please enter a valid number.');
+                  return;
+                }
+
+                final points = double.tryParse(input);
+                if (points == null || points <= 0) {
+                  _showError('Please enter a valid number greater than zero.');
+                  return;
+                }
+
+                if (points > availablePoints) {
+                  _showError('You cannot redeem more points than available.');
+                  return;
+                }
+
+                // Redeem request logic
+                _redeemPoints(points);
+              },
+              child: const Text('Redeem'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _redeemPoints(double points) async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://trash-bin-api.vercel.app/transaction/redeem'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'amount': points,
+          'user_id': global.user_id, // Use global.user_id here
+        }),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print(
+          'Response body: ${response.body}'); // Log the response body for debugging
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        print(
+            'Parsed Response Data: $data'); // Log the parsed response data for further debugging
+        _showSuccessDialog('Successfully redeemed $points points!');
+      } else if (response.statusCode == 500) {
+        final errorData = json.decode(response.body);
+        String errorMessage =
+            errorData['message'] ?? 'Internal server error occurred';
+        _showErrorDialog('Server Error: $errorMessage');
+      } else {
+        _showErrorDialog(
+            'Failed to contact server. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorDialog('An error occurred: $e');
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Success'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +275,7 @@ class _StateHome extends State<Home> {
                 Icon(Icons.location_on, size: 16),
                 SizedBox(width: 5),
                 Text(
-                  'Pinagkawitan, Lipa Batangas',
+                  'Pinagkawitan, Lipa',
                   style: TextStyle(fontSize: 12),
                 ),
               ],
@@ -80,7 +296,7 @@ class _StateHome extends State<Home> {
           children: [
             const SizedBox(height: 10),
             Text(
-              'Hi $userId,',
+              'Hi $name,',
               style: const TextStyle(fontSize: 20),
             ),
             const Text(
@@ -93,37 +309,37 @@ class _StateHome extends State<Home> {
                 borderRadius: BorderRadius.circular(12),
               ),
               elevation: 4,
-              child: const Padding(
-                padding: EdgeInsets.all(16.0),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Current Points',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
-                      'PHP 100.32',
-                      style: TextStyle(fontSize: 16),
+                      'PHP $currentPoints',
+                      style: const TextStyle(fontSize: 16),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         CategoryInfo(
-                          label: 'Paper',
+                          label: largestCategory,
                           value: 'Largest Category',
                         ),
                         CategoryInfo(
-                          label: '0.53',
+                          label: recentPoints.toStringAsFixed(2),
                           value: 'Recent Points',
                         ),
                         CategoryInfo(
-                          label: '16.43',
+                          label: largestPoint.toStringAsFixed(2),
                           value: 'Largest Amount',
                         ),
                       ],
@@ -133,13 +349,17 @@ class _StateHome extends State<Home> {
               ),
             ),
             const SizedBox(height: 30),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                IconLabel(icon: Icons.list_alt, label: 'Records'),
-                IconLabel(icon: Icons.sync_alt, label: 'Transfer'),
-                IconLabel(icon: Icons.redeem, label: 'Redeem'),
-                IconLabel(icon: Icons.swap_horiz, label: 'Convert'),
+                const IconLabel(icon: Icons.list_alt, label: 'Records'),
+                const IconLabel(icon: Icons.sync_alt, label: 'Transfer'),
+                IconLabel(
+                  icon: Icons.redeem,
+                  label: 'Redeem',
+                  onTap: _showRedeemPopup,
+                ),
+                const IconLabel(icon: Icons.swap_horiz, label: 'Convert'),
               ],
             ),
           ],
@@ -186,17 +406,21 @@ class CategoryInfo extends StatelessWidget {
 class IconLabel extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
-  const IconLabel({required this.icon, required this.label});
+  const IconLabel({required this.icon, required this.label, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, size: 32, color: const Color(0xFF8DA45D)),
-        const SizedBox(height: 5),
-        Text(label, style: const TextStyle(fontSize: 12)),
-      ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Icon(icon, size: 32, color: const Color(0xFF8DA45D)),
+          const SizedBox(height: 5),
+          Text(label, style: const TextStyle(fontSize: 12)),
+        ],
+      ),
     );
   }
 }
