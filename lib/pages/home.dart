@@ -296,7 +296,7 @@ class _StateHome extends State<Home> {
           children: [
             const SizedBox(height: 10),
             Text(
-              'Hi $name,',
+              'Hi ${global.user!.name!.getFullName()},',
               style: const TextStyle(fontSize: 20),
             ),
             const Text(

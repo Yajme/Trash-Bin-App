@@ -16,6 +16,8 @@ dependencies:
   flutter_local_notifications: ^18.0.0
   google_fonts: ^6.2.1
   http: ^1.2.2
+  mobile_scanner: ^6.0.2
+  qr_scanner_overlay: ^0.0.2
 
 dev_dependencies:
   flutter_test:

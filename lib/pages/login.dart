@@ -51,16 +51,9 @@ class _StateLogin extends State<Login> {
         final responseData = jsonDecode(response.body);
 
         // Set global role and user_id and everything else
-        setGlobals(responseData);
+        await setGlobals(responseData);
 
         print('Login successful: ${responseData['message']}');
-
-        // Navigate to user or admin dashboard based on role
-        if (global.role == 'user') {
-          Navigator.pushReplacementNamed(context, '/user');
-        } else if (global.role == 'admin') {
-          Navigator.pushReplacementNamed(context, '/admin');
-        }
       } else {
         // Login failed
         final errorData = jsonDecode(response.body);
@@ -80,7 +73,7 @@ class _StateLogin extends State<Login> {
     }
   }
 
-  void setGlobals(dynamic data) async {
+  Future<void> setGlobals(dynamic data) async {
     final pref = await SharedPreferences.getInstance();
     setState(() {
       global.role = data['role'];
