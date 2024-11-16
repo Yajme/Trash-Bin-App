@@ -55,13 +55,7 @@ class _StateLogin extends State<Login> {
         global.user_id = responseData['user_id'];
 
         print('Login successful: ${responseData['message']}');
-
-        // Navigate to user or admin dashboard based on role
-        if (global.role == 'user') {
-          Navigator.pushReplacementNamed(context, '/user');
-        } else if (global.role == 'admin') {
-          Navigator.pushReplacementNamed(context, '/admin');
-        }
+        await setGlobals(responseData);
       } else {
         // Login failed
         final errorData = jsonDecode(response.body);
@@ -81,7 +75,7 @@ class _StateLogin extends State<Login> {
     }
   }
 
-void setGlobals(dynamic data) async {
+Future setGlobals(dynamic data) async {
   final pref = await SharedPreferences.getInstance();
 setState(() {
 
