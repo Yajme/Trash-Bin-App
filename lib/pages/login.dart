@@ -50,9 +50,8 @@ class _StateLogin extends State<Login> {
         // Login successful
         final responseData = jsonDecode(response.body);
 
-        // Set global role and user_id
-        global.role = responseData['role'];
-        global.user_id = responseData['user_id'];
+        // Set global role and user_id and everything else
+        setGlobals(responseData);
 
         print('Login successful: ${responseData['message']}');
 
@@ -87,19 +86,28 @@ class _StateLogin extends State<Login> {
       global.role = data['role'];
       global.user_id = data['user_id'];
 
-      //Setting pref as cache
+      // Cache these values
       pref.setBool('isLoggedIn', true);
       pref.setString('role', global.role);
       pref.setString('user_id', global.user_id);
       pref.setString('token', global.token);
+
+      // Set default user values even for non-'user' roles
       if (data['role'] == 'user') {
-        //Setting an instance of object Name
         final name = global.Name(
             first: data['name']['first'], last: data['name']['last']);
-        //Setting user
         global.user = global.User(
           address: data['address'],
           birthday: data['birthday'],
+          name: name,
+        );
+        pref.setString('user', jsonEncode(global.user!.toJson()));
+      } else {
+        // Set global.user with some default values for other roles
+        final name = global.Name(first: 'Admin', last: 'User');
+        global.user = global.User(
+          address: 'N/A',
+          birthday: 'N/A',
           name: name,
         );
         pref.setString('user', jsonEncode(global.user!.toJson()));
