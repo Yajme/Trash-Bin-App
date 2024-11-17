@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trash_bin_app/model/globals.dart' as global;
+
 //TODO : create home page
 class Profile extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _StateProfile extends State<Profile> {
             children: [
               Text('Profile Page'),
               ElevatedButton(
-                  onPressed: ()  {
+                  onPressed: () {
                     global.clearGlobals();
                     Navigator.popAndPushNamed(context, '/login');
                   },

@@ -215,7 +215,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         Navigator.pushReplacementNamed(context, '/login');
                       },
                       child: const Text(
-                        'Already have an account? Login',
+                        'Already have account? Login',
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Color.fromARGB(255, 255, 255, 255),
