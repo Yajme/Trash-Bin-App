@@ -160,12 +160,17 @@ class _StateUserMainScaffolding extends State<UserMainScaffolding> {
 }
 final List<Widget> _adminPages = [
   AdminHome(), 
+  QRScan(),
   Profile(), 
 ];
 const List<BottomNavigationBarItem> adminBottomNavBarItems = [
    BottomNavigationBarItem(
     icon: Icon(Icons.home),
     label: 'Home',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.qr_code),
+    label: 'QR',
   ),
   BottomNavigationBarItem(
     icon: Icon(Icons.person),
