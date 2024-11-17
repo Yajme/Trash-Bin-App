@@ -171,6 +171,10 @@ const List<BottomNavigationBarItem> adminBottomNavBarItems = [
     label: 'Home',
   ),
   BottomNavigationBarItem(
+    icon: Icon(Icons.qr_code),
+    label: 'QR',
+  ),
+  BottomNavigationBarItem(
     icon: Icon(Icons.person),
     label: 'Profile',
   ),

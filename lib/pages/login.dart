@@ -54,6 +54,7 @@ class _StateLogin extends State<Login> {
         await setGlobals(responseData);
 
         print('Login successful: ${responseData['message']}');
+        await setGlobals(responseData);
       } else {
         // Login failed
         final errorData = jsonDecode(response.body);
@@ -73,7 +74,7 @@ class _StateLogin extends State<Login> {
     }
   }
 
-  Future<void> setGlobals(dynamic data) async {
+  Future setGlobals(dynamic data) async {
     final pref = await SharedPreferences.getInstance();
     setState(() {
       global.role = data['role'];
