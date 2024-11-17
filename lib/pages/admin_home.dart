@@ -19,7 +19,7 @@ class _StateHome extends State<AdminHome> {
   String _dateString = '';
   String _locationString = 'Fetching location...';
   Timer? _timer;
-  
+
   @override
   void initState() {
     super.initState();
@@ -37,25 +37,28 @@ class _StateHome extends State<AdminHome> {
     });
   }
 
-   Future<void> _getLocation() async {
+  Future<void> _getLocation() async {
     // Request permission
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
 
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high, // Set the desired accuracy
           distanceFilter: 10, // Optional: Set the distance filter
         ),
       );
-      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
       Placemark place = placemarks[0];
 
       setState(() {
-        _locationString = "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}"; // Detailed address
+        _locationString =
+            "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}"; // Detailed address
       });
     } else {
       setState(() {
@@ -75,7 +78,8 @@ class _StateHome extends State<AdminHome> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          firstName = data['first_name'] ?? 'Admin'; // Default to 'User' if null
+          firstName =
+              data['first_name'] ?? 'Admin'; // Default to 'User' if null
           lastName = data['last_name'] ?? '';
         });
       } else {
