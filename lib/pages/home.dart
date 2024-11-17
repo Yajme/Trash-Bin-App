@@ -23,7 +23,7 @@ class _StateHome extends State<Home> {
 
   Future<void> getWasteRecords() async {
     final userId = global.user_id; // Ensure this is set correctly
-    if (userId == null) {
+    if (userId == '' || userId.isEmpty) {
       print('Error: userId is null.');
       return;
     }
@@ -98,7 +98,6 @@ class _StateHome extends State<Home> {
   }
 
   final name = global.user?.name?.getFullName();
-  final double availablePoints = 100.32; // Example available points
   final TextEditingController _pointsController = TextEditingController();
 
   void _showRedeemPopup() {
@@ -147,7 +146,7 @@ class _StateHome extends State<Home> {
                   return;
                 }
 
-                if (points > availablePoints) {
+                if (points > currentPoints) {
                   _showError('You cannot redeem more points than available.');
                   return;
                 }

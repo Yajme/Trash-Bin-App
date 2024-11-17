@@ -8,6 +8,7 @@ import 'package:trash_bin_app/pages/admin_home.dart';
 import 'package:trash_bin_app/pages/login.dart';
 import 'package:trash_bin_app/pages/qrscan.dart';
 import 'package:trash_bin_app/pages/profile.dart';
+import 'package:trash_bin_app/pages/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_bin_app/model/constants.dart';
 import 'package:trash_bin_app/model/globals.dart' as global;
@@ -49,9 +50,8 @@ class _MainAppState extends State<MainApp> {
     initPref();
   }
 
- Future<void> initPref()  async {
+  Future<void> initPref() async {
     final pref = await SharedPreferences.getInstance();
-
 
     setState(() {
       isLoggedIn = pref.getBool('isLoggedIn') ?? false;
@@ -84,14 +84,15 @@ class _MainAppState extends State<MainApp> {
       //* If the [isLoggedIn] is set to true, the initial page will be set to the main page
       //* Otherwise the page will be redirected to login
       home: isLoggedIn
-        ? global.role == 'admin'
-            ? const AdminMainScaffolding()
-            : const UserMainScaffolding()
-        : Login(),
+          ? global.role == 'admin'
+              ? const AdminMainScaffolding()
+              : const UserMainScaffolding()
+          : Login(),
       routes: {
         '/user': (context) => const UserMainScaffolding(),
         '/admin': (context) => const AdminMainScaffolding(),
         '/login': (context) => Login(),
+        '/register': (context) => const RegistrationPage(),
         //TODO: Add more routes here especially for admin
       },
     );
