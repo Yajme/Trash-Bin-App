@@ -206,9 +206,9 @@ class _StateHome extends State<AdminHome> {
                     subtitle: 'View all user records of recycled materials',
                     icon: FontAwesomeIcons.solidFileLines,
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(builder: (context) => const RecordsPage()),
+                        '/records',
                       );
                     },
                   ),
@@ -217,9 +217,9 @@ class _StateHome extends State<AdminHome> {
                     subtitle: 'View all user transactions of redeemed points',
                     icon: FontAwesomeIcons.cashRegister,
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(builder: (context) => TransactionsPage()),
+                        '/transactions',
                       );
                     },
                   ),
@@ -228,9 +228,9 @@ class _StateHome extends State<AdminHome> {
                     subtitle: 'View all Registered User Information',
                     icon: Icons.people,
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(builder: (context) => const UserInfoPage()),
+                        '/users_info',
                       );
                     },
                   ),
