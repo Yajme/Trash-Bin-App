@@ -50,11 +50,11 @@ class _StateLogin extends State<Login> {
         // Login successful
         final responseData = jsonDecode(response.body);
 
-        // Set global role and user_id
-        global.role = responseData['role'];
-        global.user_id = responseData['user_id'];
+        // Set global role and user_id and everything else
+        await setGlobals(responseData);
 
         print('Login successful: ${responseData['message']}');
+        await setGlobals(responseData);
         await setGlobals(responseData);
       } else {
         // Login failed
@@ -75,41 +75,51 @@ class _StateLogin extends State<Login> {
     }
   }
 
-Future setGlobals(dynamic data) async {
-  final pref = await SharedPreferences.getInstance();
-setState(() {
+  Future setGlobals(dynamic data) async {
+    final pref = await SharedPreferences.getInstance();
+    setState(() {
+      global.role = data['role'];
+      global.user_id = data['user_id'];
 
-  global.role = data['role'];
-  global.user_id = data['user_id'];
+      // Cache these values
+      pref.setBool('isLoggedIn', true);
+      pref.setString('role', global.role);
+      pref.setString('user_id', global.user_id);
+      pref.setString('token', global.token);
 
-  //Setting pref as cache
-  pref.setBool('isLoggedIn', true);
-  pref.setString('role', global.role);
-  pref.setString('user_id', global.user_id);
-  pref.setString('token', global.token);
-  if(data['role'] == 'user'){
-    //Setting an instance of object Name
-    final name = global.Name(first: data['name']['first'], last: data['name']['last']);
-    //Setting user
-    global.user = global.User(
-      address: data['address'],
-      birthday: data['birthday'],
-      name: name,
-    );
-    pref.setString('user', jsonEncode(global.user!.toJson()));
+      // Set default user values even for non-'user' roles
+      if (data['role'] == 'user') {
+        final name = global.Name(
+            first: data['name']['first'], last: data['name']['last']);
+        global.user = global.User(
+          address: data['address'],
+          birthday: data['birthday'],
+          name: name,
+        );
+        pref.setString('user', jsonEncode(global.user!.toJson()));
+      } else {
+        // Set global.user with some default values for other roles
+        final name = global.Name(first: 'Admin', last: 'User');
+        global.user = global.User(
+          address: 'N/A',
+          birthday: 'N/A',
+          name: name,
+        );
+        pref.setString('user', jsonEncode(global.user!.toJson()));
+      }
+    });
+    changePage();
   }
-});
-  changePage();
-}
 
-void changePage(){
-if(global.role =='user'){
-  Navigator.pushReplacementNamed(context, '/user');
+  void changePage() {
+    if (global.role == 'user') {
+      Navigator.pushReplacementNamed(context, '/user');
+    }
+    if (global.role == 'admin') {
+      Navigator.pushReplacementNamed(context, '/admin');
+    }
   }
-  if(global.role =='admin'){
-    Navigator.pushReplacementNamed(context, '/admin');
-  }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -211,6 +221,19 @@ if(global.role =='user'){
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/register');
+                      },
+                      child: const Text(
+                        'Don’t have an account? Register',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
                     ),
                   ],

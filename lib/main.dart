@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,6 +8,7 @@ import 'package:trash_bin_app/pages/admin_home.dart';
 import 'package:trash_bin_app/pages/login.dart';
 import 'package:trash_bin_app/pages/qrscan.dart';
 import 'package:trash_bin_app/pages/profile.dart';
+import 'package:trash_bin_app/pages/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_bin_app/model/constants.dart';
 import 'package:trash_bin_app/model/globals.dart' as global;
@@ -54,22 +54,21 @@ class _MainAppState extends State<MainApp> {
     initPref();
   }
 
- Future<void> initPref()  async {
+  Future<void> initPref() async {
     final pref = await SharedPreferences.getInstance();
-
 
     setState(() {
       isLoggedIn = pref.getBool('isLoggedIn') ?? false;
-      if(isLoggedIn){
-      //Set Global Variables here
-      global.user_id = pref.getString('user_id') ?? '';
-      global.token = pref.getString('token') ?? '';
-      global.role = pref.getString('role') ?? '';
-      var userData = Map<String, dynamic>.from(jsonDecode(pref.getString('user')!));
-      global.user = global.User.fromMap(userData);
+      if (isLoggedIn) {
+        //Set Global Variables here
+        global.user_id = pref.getString('user_id') ?? '';
+        global.token = pref.getString('token') ?? '';
+        global.role = pref.getString('role') ?? '';
+        var userData =
+            Map<String, dynamic>.from(jsonDecode(pref.getString('user')!));
+        global.user = global.User.fromMap(userData);
       }
-      
-     });
+    });
   }
 
   @override
@@ -89,22 +88,25 @@ class _MainAppState extends State<MainApp> {
       //* If the [isLoggedIn] is set to true, the initial page will be set to the main page
       //* Otherwise the page will be redirected to login
       home: isLoggedIn
-        ? global.role == 'admin'
-            ? const AdminMainScaffolding()
-            : const UserMainScaffolding()
-        : Login(),
+          ? global.role == 'admin'
+              ? const AdminMainScaffolding()
+              : const UserMainScaffolding()
+          : Login(),
       routes: {
         '/user': (context) => const UserMainScaffolding(),
-        '/admin' : (context) => const AdminMainScaffolding(),
+        '/admin': (context) => const AdminMainScaffolding(),
         '/login': (context) => Login(),
         '/records': (context) => const RecordsPage(),
         '/transactions': (context) => TransactionsPage(),
         '/users_info': (context) => const UserInfoPage(),
+        '/register': (context) => const RegistrationPage(),
+
         //TODO: Add more routes here especially for admin
       },
     );
   }
 }
+
 class AdminMainScaffolding extends StatefulWidget {
   const AdminMainScaffolding({super.key});
   @override
@@ -135,6 +137,7 @@ class _StateAdminMainScaffolding extends State<AdminMainScaffolding> {
         ));
   }
 }
+
 class UserMainScaffolding extends StatefulWidget {
   const UserMainScaffolding({super.key});
   @override
@@ -165,15 +168,19 @@ class _StateUserMainScaffolding extends State<UserMainScaffolding> {
         ));
   }
 }
+
 final List<Widget> _adminPages = [
-  AdminHome(), 
-  QRScan(),
-  Profile(), 
+  AdminHome(),
+  Profile(),
 ];
 const List<BottomNavigationBarItem> adminBottomNavBarItems = [
-   BottomNavigationBarItem(
+  BottomNavigationBarItem(
     icon: Icon(Icons.home),
     label: 'Home',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.qr_code),
+    label: 'QR',
   ),
   BottomNavigationBarItem(
     icon: Icon(Icons.qr_code),
@@ -186,11 +193,11 @@ const List<BottomNavigationBarItem> adminBottomNavBarItems = [
 ];
 final List<Widget> _userPages = [
   Home(), //*Replace the Scaffold to more appropriate page for handling undefined role
-  QRScan(), 
-  Profile(), 
+  QRScan(),
+  Profile(),
 ];
 const List<BottomNavigationBarItem> userBottomNavBarItems = [
-   BottomNavigationBarItem(
+  BottomNavigationBarItem(
     icon: Icon(Icons.home),
     label: 'Home',
   ),
