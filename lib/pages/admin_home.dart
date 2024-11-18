@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //TODO : create home page
 class AdminHome extends StatefulWidget {
@@ -19,7 +20,7 @@ class _StateHome extends State<AdminHome> {
   String _dateString = '';
   String _locationString = 'Fetching location...';
   Timer? _timer;
-  
+
   @override
   void initState() {
     super.initState();
@@ -37,25 +38,28 @@ class _StateHome extends State<AdminHome> {
     });
   }
 
-   Future<void> _getLocation() async {
+  Future<void> _getLocation() async {
     // Request permission
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
 
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high, // Set the desired accuracy
           distanceFilter: 10, // Optional: Set the distance filter
         ),
       );
-      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
       Placemark place = placemarks[0];
 
       setState(() {
-        _locationString = "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}"; // Detailed address
+        _locationString =
+            "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}"; // Detailed address
       });
     } else {
       setState(() {
@@ -75,7 +79,8 @@ class _StateHome extends State<AdminHome> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          firstName = data['first_name'] ?? 'Admin'; // Default to 'User' if null
+          firstName =
+              data['first_name'] ?? 'Admin'; // Default to 'User' if null
           lastName = data['last_name'] ?? '';
         });
       } else {
@@ -92,6 +97,50 @@ class _StateHome extends State<AdminHome> {
     _timer?.cancel();
     super.dispose();
   }
+
+  Widget _buildCard({
+    required String title, 
+    required String subtitle, 
+    required IconData icon
+    }) {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * 0.9,
+    height: 150,
+    child: Card(
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 12, 10, 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center, // Center the icon vertically
+              children: [
+                Icon(icon, size: 72.0),
+                const SizedBox(height: 8, width: 100,), // Space between the icon and the text
+              ],
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  const SizedBox(height: 4), // Space between title and subtitle
+                  Text(subtitle),
+                ],
+              ),
+            ),
+            const Center(child: Icon(Icons.navigate_next_rounded, size: 30.0)),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 
   final userId = global.user_id;
   @override
@@ -132,14 +181,35 @@ class _StateHome extends State<AdminHome> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            Text(
-              'Hi Admin!,',
-              style: const TextStyle(fontSize: 20),
-            ),
-            const SizedBox(height: 10),
             const Text(
-              'Welcome to Back!',
+              'Hi Admin!,',
+              style: TextStyle(fontSize: 20),
+            ),
+            const Text(
+              'Welcome Back!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildCard(
+                    title: 'View Records',
+                    subtitle: 'View all user records of recycled materials',
+                    icon: FontAwesomeIcons.solidFileLines,
+                  ),
+                  _buildCard(
+                    title: 'View Transactions',
+                    subtitle: 'View all user transactions of redeemed points',
+                    icon: FontAwesomeIcons.cashRegister,
+                  ),
+                  _buildCard(
+                    title: 'View Users',
+                    subtitle: 'View all Registered User Information',
+                    icon: Icons.people,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
