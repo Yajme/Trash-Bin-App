@@ -7,6 +7,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:trash_bin_app/pages/records.dart';
+import 'package:trash_bin_app/pages/transactions.dart';
+import 'package:trash_bin_app/pages/users_info.dart';
+
 
 //TODO : create home page
 class AdminHome extends StatefulWidget {
@@ -101,40 +105,44 @@ class _StateHome extends State<AdminHome> {
   Widget _buildCard({
     required String title, 
     required String subtitle, 
-    required IconData icon
+    required IconData icon,
+    required VoidCallback onTap, 
     }) {
   return SizedBox(
     width: MediaQuery.of(context).size.width * 0.9,
     height: 150,
-    child: Card(
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 12, 10, 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center, // Center the icon vertically
-              children: [
-                Icon(icon, size: 72.0),
-                const SizedBox(height: 8, width: 100,), // Space between the icon and the text
-              ],
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    child: InkWell(
+      onTap: onTap,
+      child: Card(
+        elevation: 5,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 12, 10, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center, // Center the icon vertically
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                  const SizedBox(height: 4), // Space between title and subtitle
-                  Text(subtitle),
+                  Icon(icon, size: 72.0),
+                  const SizedBox(height: 8, width: 100,), // Space between the icon and the text
                 ],
               ),
-            ),
-            const Center(child: Icon(Icons.navigate_next_rounded, size: 30.0)),
-          ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    const SizedBox(height: 4), // Space between title and subtitle
+                    Text(subtitle),
+                  ],
+                ),
+              ),
+              const Center(child: Icon(Icons.navigate_next_rounded, size: 30.0)),
+            ],
+          ),
         ),
       ),
     ),
@@ -197,16 +205,34 @@ class _StateHome extends State<AdminHome> {
                     title: 'View Records',
                     subtitle: 'View all user records of recycled materials',
                     icon: FontAwesomeIcons.solidFileLines,
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/records',
+                      );
+                    },
                   ),
                   _buildCard(
                     title: 'View Transactions',
                     subtitle: 'View all user transactions of redeemed points',
                     icon: FontAwesomeIcons.cashRegister,
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/transactions',
+                      );
+                    },
                   ),
                   _buildCard(
                     title: 'View Users',
                     subtitle: 'View all Registered User Information',
                     icon: Icons.people,
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/users_info',
+                      );
+                    },
                   ),
                 ],
               ),
