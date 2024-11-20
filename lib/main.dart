@@ -15,6 +15,7 @@ import 'package:trash_bin_app/model/globals.dart' as global;
 import 'package:trash_bin_app/pages/records.dart';
 import 'package:trash_bin_app/pages/transactions.dart';
 import 'package:trash_bin_app/pages/users_info.dart';
+import 'package:trash_bin_app/pages/redeem.dart';
 
 //TODO: Create a separate file for user and admins
 //TODO: Enable camera permissions for qr scanning
@@ -100,6 +101,7 @@ class _MainAppState extends State<MainApp> {
         '/transactions': (context) => TransactionsPage(),
         '/users_info': (context) => const UserInfoPage(),
         '/register': (context) => const RegistrationPage(),
+        '/redeem': (context) => RedemptionPage(),
 
         //TODO: Add more routes here especially for admin
       },
