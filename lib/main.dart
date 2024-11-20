@@ -16,6 +16,7 @@ import 'package:trash_bin_app/pages/records.dart';
 import 'package:trash_bin_app/pages/transactions.dart';
 import 'package:trash_bin_app/pages/users_info.dart';
 import 'package:trash_bin_app/pages/redeem.dart';
+import 'package:trash_bin_app/pages/reference.dart';
 
 //TODO: Create a separate file for user and admins
 //TODO: Enable camera permissions for qr scanning
@@ -102,6 +103,7 @@ class _MainAppState extends State<MainApp> {
         '/users_info': (context) => const UserInfoPage(),
         '/register': (context) => const RegistrationPage(),
         '/redeem': (context) => RedemptionPage(),
+        '/reference': (context) => ReferencePage(),
 
         //TODO: Add more routes here especially for admin
       },
