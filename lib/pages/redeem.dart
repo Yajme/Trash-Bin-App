@@ -28,7 +28,21 @@ class _RedemptionPageState extends State<RedemptionPage> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
-        _showSuccessDialog('Successfully redeemed $points points!');
+
+        final referenceNumber = data['reference_number'].toString();
+        final remainingPoints = data['current_points'].toString();
+
+        global.referenceNumber = referenceNumber;
+
+        Navigator.pushNamed(
+          context,
+          '/reference',
+          arguments: {
+            'referenceNumber': referenceNumber,
+            'redeemedAmount': points.toString(),
+            'remainingPoints': remainingPoints,
+          },
+        );
       } else if (response.statusCode == 500) {
         final errorData = json.decode(response.body);
         String errorMessage =
@@ -49,26 +63,6 @@ class _RedemptionPageState extends State<RedemptionPage> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Error'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showSuccessDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Success'),
           content: Text(message),
           actions: [
             TextButton(
@@ -107,15 +101,14 @@ class _RedemptionPageState extends State<RedemptionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Background color is white now
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white, // Matches the page color
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Colors.black), // Icon color to match
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/user'); // Navigate back
+            Navigator.pushReplacementNamed(context, '/user');
           },
         ),
       ),
@@ -124,7 +117,7 @@ class _RedemptionPageState extends State<RedemptionPage> {
           padding: const EdgeInsets.all(20),
           margin: const EdgeInsets.symmetric(horizontal: 30),
           decoration: BoxDecoration(
-            color: ColorTheme.primaryColor, // Inner green color
+            color: ColorTheme.primaryColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -135,15 +128,13 @@ class _RedemptionPageState extends State<RedemptionPage> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color:
-                      Colors.white, // Text color matches the green background
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
               const Text(
                 'Enter points you want to redeem:',
-                style: TextStyle(
-                    fontSize: 16, color: Colors.white), // Text color is white
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -151,7 +142,7 @@ class _RedemptionPageState extends State<RedemptionPage> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white, // Input box color remains white
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -159,16 +150,14 @@ class _RedemptionPageState extends State<RedemptionPage> {
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   hintText: 'Enter points',
-                  hintStyle:
-                      const TextStyle(color: Colors.black54), // Hint text color
+                  hintStyle: const TextStyle(color: Colors.black54),
                 ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _redeem,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      ColorTheme.accentColor, // Dark green button color
+                  backgroundColor: ColorTheme.accentColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
