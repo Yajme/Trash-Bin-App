@@ -99,7 +99,7 @@ class _MainAppState extends State<MainApp> {
         '/login': (context) => Login(),
         '/records': (context) => const RecordsPage(),
         '/transactions': (context) => TransactionsPage(),
-        '/users_info': (context) => const UserInfoPage(),
+        '/users_info': (context) => UserInfoPage(),
         //TODO: Add more routes here especially for admin
       },
     );

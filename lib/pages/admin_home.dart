@@ -84,7 +84,7 @@ class _StateHome extends State<AdminHome> {
         final data = jsonDecode(response.body);
         setState(() {
           firstName =
-              data['first_name'] ?? 'Admin'; // Default to 'User' if null
+              data['first_name'] ?? 'Admin'; // Default to 'Admin' if null
           lastName = data['last_name'] ?? '';
         });
       } else {
