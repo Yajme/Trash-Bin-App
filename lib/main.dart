@@ -104,7 +104,6 @@ class _MainAppState extends State<MainApp> {
         '/register': (context) => const RegistrationPage(),
         '/redeem': (context) => RedemptionPage(),
         '/reference': (context) => ReferencePage(),
-
         //TODO: Add more routes here especially for admin
       },
     );
