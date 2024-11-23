@@ -2,46 +2,46 @@ import 'dart:typed_data';
 import 'package:qr_scanner_overlay/qr_scanner_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
 class QRScan extends StatefulWidget {
   QRScan({super.key});
   @override
-  State<QRScan > createState() => _StateQRScan ();
+  State<QRScan> createState() => _StateQRScan();
 }
 
-class _StateQRScan  extends State<QRScan > {
+class _StateQRScan extends State<QRScan> {
   MobileScannerController controller = MobileScannerController(
-          detectionSpeed: DetectionSpeed.noDuplicates,
-          returnImage: true
-        );
+      detectionSpeed: DetectionSpeed.noDuplicates, returnImage: true);
   @override
   Widget build(BuildContext context) {
-    final scanWindow = Rect.fromCenter(center: MediaQuery.sizeOf(context).center(Offset.zero), width: 200, height: 200);
+    final scanWindow = Rect.fromCenter(
+        center: MediaQuery.sizeOf(context).center(Offset.zero),
+        width: 200,
+        height: 200);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('QRScan'),
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          MobileScanner(
-        controller:MobileScannerController(
-          detectionSpeed: DetectionSpeed.noDuplicates,
+        appBar: AppBar(
+          title: Text('QRScan'),
         ),
-        onDetect: (capture){
-          final List<Barcode> barcodes = capture.barcodes;
-          final Uint8List? image = capture.image;
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            MobileScanner(
+              controller: MobileScannerController(
+                detectionSpeed: DetectionSpeed.noDuplicates,
+              ),
+              onDetect: (capture) {
+                final List<Barcode> barcodes = capture.barcodes;
+                final Uint8List? image = capture.image;
 
-          //TODO : Scan QR from raspberry pi to enable conversion of waste to points
-        },
-      ),
-       QRScannerOverlay()
-        ],
-      )
-    );
+                //TODO : Scan QR from raspberry pi to enable conversion of waste to points
+              },
+            ),
+            QRScannerOverlay()
+          ],
+        ));
   }
 }
-
 
 // Creates the white borders
 class BorderPainter extends CustomPainter {
