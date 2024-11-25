@@ -2,7 +2,6 @@ library my_prj.globals;
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_bin_app/api/firebase_api.dart';
 
 String token = '';
