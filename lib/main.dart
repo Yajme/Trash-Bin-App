@@ -12,6 +12,12 @@ import 'package:trash_bin_app/pages/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_bin_app/model/constants.dart';
 import 'package:trash_bin_app/model/globals.dart' as global;
+import 'package:trash_bin_app/pages/records.dart';
+import 'package:trash_bin_app/pages/transactions.dart';
+import 'package:trash_bin_app/pages/users_info.dart';
+import 'package:trash_bin_app/pages/redeem.dart';
+import 'package:trash_bin_app/pages/reference.dart';
+
 //TODO: Create a separate file for user and admins
 //TODO: Enable camera permissions for qr scanning
 //TODO: Implement QR scanning for trash disposal
@@ -92,7 +98,12 @@ class _MainAppState extends State<MainApp> {
         '/user': (context) => const UserMainScaffolding(),
         '/admin': (context) => const AdminMainScaffolding(),
         '/login': (context) => Login(),
+        '/records': (context) => const RecordsPage(),
+        '/transactions': (context) => TransactionsPage(),
+        '/users_info': (context) => const UserInfoPage(),
         '/register': (context) => const RegistrationPage(),
+        '/redeem': (context) => RedemptionPage(),
+        '/reference': (context) => ReferencePage(),
         //TODO: Add more routes here especially for admin
       },
     );
