@@ -140,7 +140,7 @@ class _StateLogin extends State<Login> {
               ),
               const SizedBox(height: 20),
               Container(
-                padding: EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
                   color: Colors.greenAccent[700],
                   borderRadius: BorderRadius.circular(10.0),
