@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:trash_bin_app/model/globals.dart' as global;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 class Home extends StatefulWidget {
   @override
   State<Home> createState() => _StateHome();
@@ -14,13 +16,54 @@ class _StateHome extends State<Home> {
   double largestPoint = 0.0;
   double recentPoints = 0.0;
   double currentPoints = 0.0;
-
+  String _dateString = '';
+  String _locationString = 'Fetching location...';
+  //Timer? _timer;
   @override
   void initState() {
     super.initState();
     getWasteRecords();
+    _updateDate();
+     _getLocation();
+  }
+ void _updateDate() {
+    // Update the date every minute
+    
+      setState(() {
+        _dateString = DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now());
+      });
+    
   }
 
+  Future<void> _getLocation() async {
+    // Request permission
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high, // Set the desired accuracy
+          distanceFilter: 10, // Optional: Set the distance filter
+        ),
+      );
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+      Placemark place = placemarks[0];
+
+      setState(() {
+        _locationString =
+            "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}"; // Detailed address
+      });
+    } else {
+      setState(() {
+        _locationString = 'Location access denied';
+      });
+    }
+  }
   Future<void> getWasteRecords() async {
     final userId = global.user_id;
     if (userId == '' || userId.isEmpty) {
@@ -86,30 +129,29 @@ class _StateHome extends State<Home> {
     }
   }
 
-  void _navigateToRedeem() {
-    Navigator.pushReplacementNamed(context, '/redeem');
+  void navigateToPage(String route){
+    Navigator.pushNamed(context, route);
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 60,
         backgroundColor: const Color(0xFF8DA45D),
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Tuesday, November 19, 2024',
+              _dateString,
               style: TextStyle(fontSize: 12),
             ),
             Row(
               children: [
-                Icon(Icons.location_on, size: 16),
-                SizedBox(width: 5),
+                const Icon(Icons.location_on, size: 16),
+                const SizedBox(width: 5),
                 Text(
-                  'Pinagkawitan, Lipa',
-                  style: TextStyle(fontSize: 12),
+                  _locationString,
+                  style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),
@@ -156,7 +198,7 @@ class _StateHome extends State<Home> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'PHP $currentPoints',
+                      'PHP ${currentPoints.toStringAsFixed(2)}',
                       style: const TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 20),
@@ -185,14 +227,22 @@ class _StateHome extends State<Home> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                const IconLabel(icon: Icons.list_alt, label: 'Records'),
-                const IconLabel(icon: Icons.sync_alt, label: 'Transfer'),
+                IconLabel(icon: Icons.list_alt, label: 'Records', onTap: (){
+                  navigateToPage('/records');
+                },),
+                IconLabel(icon: Icons.receipt_long, label: 'Transfer',onTap:(){
+                  navigateToPage('/transactions');
+                }),
                 IconLabel(
                   icon: Icons.redeem,
                   label: 'Redeem',
-                  onTap: _navigateToRedeem,
+                  onTap: (){
+                    navigateToPage('/redeem');
+                  },
                 ),
-                const IconLabel(icon: Icons.swap_horiz, label: 'Convert'),
+                IconLabel(icon: Icons.restore_from_trash, label: 'Convert',onTap: (){
+                  navigateToPage('/convert');
+                },),
               ],
             ),
           ],
@@ -245,15 +295,12 @@ class IconLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
+    return Column(
         children: [
-          Icon(icon, size: 32, color: const Color(0xFF8DA45D)),
+          IconButton(onPressed: onTap, icon: Icon(icon, size: 32, color: const Color(0xFF8DA45D))),
           const SizedBox(height: 5),
           Text(label, style: const TextStyle(fontSize: 12)),
         ],
-      ),
-    );
+      );
   }
 }

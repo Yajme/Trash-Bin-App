@@ -68,7 +68,11 @@ class MyData extends DataTableSource {
       if (text.isEmpty) return text; // Return empty string if input is empty
       return text[0].toUpperCase() + text.substring(1).toLowerCase();
     }
-    final url = Uri.parse('https://trash-bin-api.vercel.app/waste/records/all?user_id=$userId');
+    final filter = global.role == 'admin' ? '/all' : global.role == 'user' ? '' : '';
+    print(global.role);
+    final uri = 'https://trash-bin-api.vercel.app/waste/records$filter?user_id=$userId';
+    print(uri);
+    final url = Uri.parse(uri);
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {

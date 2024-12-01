@@ -63,7 +63,9 @@ class MyData extends DataTableSource {
 
   // Fetch user data from the API
   Future<void> fetchData(String userId) async {
-    final url = Uri.parse('https://trash-bin-api.vercel.app/transaction/records?filter=all&user_id=$userId');
+    final filter = global.role == 'admin' ? 'all' : 'individual';
+    print(global.role);
+    final url = Uri.parse('https://trash-bin-api.vercel.app/transaction/records?filter=$filter&user_id=$userId');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
