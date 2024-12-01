@@ -10,7 +10,19 @@ class QRScan extends StatefulWidget {
 }
 
 class _StateQRScan extends State<QRScan> {
-  MobileScannerController controller = MobileScannerController(
+void restartScanner() {
+    _controller.stop(); // Stop the current scanning
+    Future.delayed(Duration(milliseconds: 500), () {
+      _controller.start(); // Restart scanning after a short delay
+    });
+  }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  MobileScannerController _controller = MobileScannerController(
       detectionSpeed: DetectionSpeed.noDuplicates, returnImage: true);
   @override
   Widget build(BuildContext context) {
@@ -27,17 +39,26 @@ class _StateQRScan extends State<QRScan> {
           fit: StackFit.expand,
           children: [
             MobileScanner(
-              controller: MobileScannerController(
-                detectionSpeed: DetectionSpeed.noDuplicates,
-              ),
+              controller: _controller,
               onDetect: (capture) {
                 final List<Barcode> barcodes = capture.barcodes;
                 final Uint8List? image = capture.image;
 
                 //TODO : Scan QR from raspberry pi to enable conversion of waste to points
+                for(final barcode in barcodes){
+                  print('Barcode Found ${barcode.rawValue}');
+                  Navigator.pushNamed(context, '/convert',arguments: {
+                    'qrcode' : barcode.rawValue
+                  });
+                } 
               },
             ),
-            QRScannerOverlay()
+            QRScannerOverlay(),
+            //Reset Button Here
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: restartScanner,
+            )
           ],
         ));
   }

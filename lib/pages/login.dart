@@ -55,7 +55,7 @@ class _StateLogin extends State<Login> {
 
         print('Login successful: ${responseData['message']}');
         await setGlobals(responseData);
-        await setGlobals(responseData);
+
       } else {
         // Login failed
         final errorData = jsonDecode(response.body);

@@ -17,7 +17,7 @@ import 'package:trash_bin_app/pages/transactions.dart';
 import 'package:trash_bin_app/pages/users_info.dart';
 import 'package:trash_bin_app/pages/redeem.dart';
 import 'package:trash_bin_app/pages/reference.dart';
-
+import 'package:trash_bin_app/pages/convert.dart';
 //TODO: Create a separate file for user and admins
 //TODO: Enable camera permissions for qr scanning
 //TODO: Implement QR scanning for trash disposal
@@ -52,7 +52,6 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    //! InitPref() is commented out for development purposes
     initPref();
   }
 
@@ -104,6 +103,7 @@ class _MainAppState extends State<MainApp> {
         '/register': (context) => const RegistrationPage(),
         '/redeem': (context) => RedemptionPage(),
         '/reference': (context) => ReferencePage(),
+        '/convert' : (context) => ConvertWaste()
         //TODO: Add more routes here especially for admin
       },
     );
@@ -180,14 +180,6 @@ const List<BottomNavigationBarItem> adminBottomNavBarItems = [
   BottomNavigationBarItem(
     icon: Icon(Icons.home),
     label: 'Home',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.qr_code),
-    label: 'QR',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.qr_code),
-    label: 'QR',
   ),
   BottomNavigationBarItem(
     icon: Icon(Icons.person),

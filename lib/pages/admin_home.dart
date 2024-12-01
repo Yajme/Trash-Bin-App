@@ -7,12 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:trash_bin_app/pages/records.dart';
-import 'package:trash_bin_app/pages/transactions.dart';
-import 'package:trash_bin_app/pages/users_info.dart';
 
-
-//TODO : create home page
 class AdminHome extends StatefulWidget {
   @override
   State<AdminHome> createState() => _StateHome();
