@@ -98,7 +98,11 @@ class _StateProfile extends State<Profile> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+
+          global.clearGlobals();
+                    Navigator.popAndPushNamed(context, '/login');
+        },
         style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
     backgroundColor: ColorTheme.primaryColor,
