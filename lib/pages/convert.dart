@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:trash_bin_app/model/globals.dart' as global;
 
 class ConvertWaste extends StatefulWidget{
 
@@ -29,7 +29,7 @@ class _StateConvertWaste extends State<ConvertWaste>{
 
   Future<void> fetchData(String qrcode) async {
     try{
-final url = 'https://trash-bin-api.vercel.app/waste/scan?qrcode=${qrcode}';
+    final url = 'https://trash-bin-api.vercel.app/waste/scan?qrcode=$qrcode&user_id=${global.user_id}';
     final response = await http.get(Uri.parse(url));
     if(response.statusCode == 200){
       final data = jsonDecode(response.body);
@@ -44,7 +44,18 @@ final url = 'https://trash-bin-api.vercel.app/waste/scan?qrcode=${qrcode}';
     
     return Scaffold(
       appBar: AppBar(title: Text('Convert Waste'),),
-      body: Container(),
+      body: Container(
+        child: Padding(
+          padding : EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              Text('QR Code Scanned!', style: TextStyle(fontWeight: FontWeight.bold),),
+              SizedBox(height: 30,),
+               Text('You can now exit this page', style: TextStyle(fontWeight: FontWeight.w500),),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
