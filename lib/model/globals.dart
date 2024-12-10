@@ -1,4 +1,5 @@
 library my_prj.globals;
+
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_bin_app/api/firebase_api.dart';
@@ -26,17 +27,18 @@ class User {
   Name? name;
   String phoneNumber;
 
-  User(
-      {this.address = '',
-      this.birthday = '',
-      this.name,
-      this.phoneNumber = ''});
+  User({
+    this.address = '',
+    this.birthday = '',
+    this.name,
+    this.phoneNumber = '',
+  });
 
   static User fromMap(Map<String, dynamic> data) {
     return User(
       address: data['address'],
       birthday: data['birthday'],
-      name: Name(first: data['name']['first'], last: data['name']['last']),
+      name: Name.fromMap(data['name']),
     );
   }
 
@@ -44,9 +46,12 @@ class User {
     return {
       'address': address,
       'birthday': birthday,
-      'name': {'first': name!.first, 'last': name!.last}
+      'name': name?.toJson(),
     };
   }
+
+  String getFirstName() => name?.first ?? '';
+  String getLastName() => name?.last ?? '';
 }
 
 class Name {
@@ -55,7 +60,29 @@ class Name {
 
   Name({required this.first, required this.last});
 
-  getFullName() {
+  static Name fromMap(Map<String, dynamic> data) {
+    return Name(
+      first: data['first'],
+      last: data['last'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'first': first,
+      'last': last,
+    };
+  }
+
+  String getFullName() {
     return '$first $last';
+  }
+
+  String getFirstName(){
+    return first;
+  }
+
+  String getLastName(){
+    return last;
   }
 }

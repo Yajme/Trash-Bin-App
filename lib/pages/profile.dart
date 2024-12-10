@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trash_bin_app/model/constants.dart';
+import 'package:trash_bin_app/pages/editprofile.dart';
 import 'package:trash_bin_app/model/globals.dart' as global;
 
 class Profile extends StatefulWidget {
@@ -19,9 +20,9 @@ class _StateProfile extends State<Profile> {
             _buildProfileOption(Icons.person, global.user!.name!.getFullName()),
             _buildProfileOption(Icons.cake, global.user!.birthday),
             _buildProfileOption(Icons.home, global.user!.address),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildEditButton(context),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildLogoutButton(context)
           ],
         ),
@@ -32,7 +33,7 @@ class _StateProfile extends State<Profile> {
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [ColorTheme.accentColor, ColorTheme.primaryColor],
           begin: Alignment.topCenter,
@@ -42,22 +43,22 @@ class _StateProfile extends State<Profile> {
       ),
       child: Row(
         children: [
-          Spacer(),
+          const Spacer(),
           Column(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.white,
                 child: Icon(Icons.person, size: 50, color: Colors.grey),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 global.user!.name!.getFullName(),
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
               ),
             ],
           ),
-          Spacer(),
+          const Spacer(),
         ],
       ),
     );
@@ -82,7 +83,11 @@ class _StateProfile extends State<Profile> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EditProfilePage()),
+        );
+        },
         style: ElevatedButton.styleFrom(
           foregroundColor: ColorTheme.primaryColor,
           shape: RoundedRectangleBorder(
@@ -111,7 +116,7 @@ class _StateProfile extends State<Profile> {
           ),
           minimumSize: Size(double.infinity, 50),
         ),
-        child:  Row(
+        child:  const Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       Icon(Icons.logout, size: 24, color: Colors.white), // Replace with your logo image
