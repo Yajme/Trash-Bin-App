@@ -18,13 +18,10 @@ import 'package:trash_bin_app/pages/users_info.dart';
 import 'package:trash_bin_app/pages/redeem.dart';
 import 'package:trash_bin_app/pages/reference.dart';
 import 'package:trash_bin_app/pages/convert.dart';
-//TODO: Create a separate file for user and admins
-//TODO: Enable camera permissions for qr scanning
-//TODO: Implement QR scanning for trash disposal
-//TODO: Create page for registering the users
 
-//* For API Documentation : https://github.com/Yajme/trash-bin-api/?tab=readme-ov-file#trash-bin-api
-//* API LINK: https://trash-bin-api.vercel.app/
+// Define a RouteObserver
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -49,6 +46,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   //* Set this to false to access the Login Page
   bool isLoggedIn = false;
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +59,7 @@ class _MainAppState extends State<MainApp> {
     setState(() {
       isLoggedIn = pref.getBool('isLoggedIn') ?? false;
       if (isLoggedIn) {
-        //Set Global Variables here
+        // Set Global Variables here
         global.user_id = pref.getString('user_id') ?? '';
         global.token = pref.getString('token') ?? '';
         global.role = pref.getString('role') ?? '';
@@ -78,9 +76,11 @@ class _MainAppState extends State<MainApp> {
       theme: ThemeData(
         primaryColor: const Color(0xfff5f5f5),
         appBarTheme: AppBarTheme(
-            titleTextStyle: TextStyle(color: ColorTheme.textColor['option 2']),
+            titleTextStyle:
+                TextStyle(color: ColorTheme.textColor['option 2']),
             backgroundColor: ColorTheme.primaryColor,
-            iconTheme: IconThemeData(color: ColorTheme.textColor['option 2'])),
+            iconTheme:
+                IconThemeData(color: ColorTheme.textColor['option 2'])),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             selectedItemColor: ColorTheme.accentColor,
             unselectedItemColor: Colors.grey),
@@ -93,6 +93,7 @@ class _MainAppState extends State<MainApp> {
               ? const AdminMainScaffolding()
               : const UserMainScaffolding()
           : Login(),
+      navigatorObservers: [routeObserver], // Add RouteObserver here
       routes: {
         '/user': (context) => const UserMainScaffolding(),
         '/admin': (context) => const AdminMainScaffolding(),
@@ -103,7 +104,7 @@ class _MainAppState extends State<MainApp> {
         '/register': (context) => const RegistrationPage(),
         '/redeem': (context) => RedemptionPage(),
         '/reference': (context) => ReferencePage(),
-        '/convert' : (context) => ConvertWaste()
+        '/convert': (context) => ConvertWaste()
         //TODO: Add more routes here especially for admin
       },
     );
@@ -112,63 +113,63 @@ class _MainAppState extends State<MainApp> {
 
 class AdminMainScaffolding extends StatefulWidget {
   const AdminMainScaffolding({super.key});
+  
   @override
   State<AdminMainScaffolding> createState() => _StateAdminMainScaffolding();
 }
 
 class _StateAdminMainScaffolding extends State<AdminMainScaffolding> {
   int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _adminPages,
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: adminBottomNavBarItems,
-          currentIndex: _selectedIndex,
-          //* Whenever an icon is pressed, the [index] of the bottomNavigation is set to [_selectedIndex]
-          //* which will change the page in the scaffolding
-          //* The pages is based on the List of pages
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-        ));
+      resizeToAvoidBottomInset: false,
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _adminPages,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: adminBottomNavBarItems,
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+    );
   }
 }
 
 class UserMainScaffolding extends StatefulWidget {
   const UserMainScaffolding({super.key});
+  
   @override
   State<UserMainScaffolding> createState() => _StateUserMainScaffolding();
 }
 
 class _StateUserMainScaffolding extends State<UserMainScaffolding> {
   int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _userPages,
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: userBottomNavBarItems,
-          currentIndex: _selectedIndex,
-          //* Whenever an icon is pressed, the [index] of the bottomNavigation is set to [_selectedIndex]
-          //* which will change the page in the scaffolding
-          //* The pages is based on the List of pages
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-        ));
+      resizeToAvoidBottomInset: false,
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _userPages,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: userBottomNavBarItems,
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+    );
   }
 }
 
@@ -176,6 +177,7 @@ final List<Widget> _adminPages = [
   AdminHome(),
   Profile(),
 ];
+
 const List<BottomNavigationBarItem> adminBottomNavBarItems = [
   BottomNavigationBarItem(
     icon: Icon(Icons.home),
@@ -186,11 +188,13 @@ const List<BottomNavigationBarItem> adminBottomNavBarItems = [
     label: 'Profile',
   ),
 ];
+
 final List<Widget> _userPages = [
   Home(), //*Replace the Scaffold to more appropriate page for handling undefined role
   QRScan(),
   Profile(),
 ];
+
 const List<BottomNavigationBarItem> userBottomNavBarItems = [
   BottomNavigationBarItem(
     icon: Icon(Icons.home),

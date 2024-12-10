@@ -2,6 +2,7 @@ library my_prj.globals;
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:trash_bin_app/api/firebase_api.dart';
 
 String? referenceNumber;
@@ -19,6 +20,29 @@ clearGlobals() async {
   user_id = '';
   user = null;
   await FirebaseApi().getToken();
+}
+
+Future<void> fetchUserData() async {
+  final pref = await SharedPreferences.getInstance();
+  String? userDataJson = pref.getString('user_data');
+
+  if (userDataJson != null) {
+    Map<String, dynamic> userDataMap = jsonDecode(userDataJson);
+    user = User.fromMap(userDataMap);
+  } else {
+    // Fetch user data from Firestore if not found in SharedPreferences
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user_id).get();
+    
+    if (userDoc.exists) {
+      // Safely access data
+      Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
+      if (data != null) {
+        user = User.fromMap(data);
+        // Save to SharedPreferences if needed
+        pref.setString('user_data', jsonEncode(user?.toJson()));
+      }
+    }
+  }
 }
 
 class User {
@@ -39,6 +63,7 @@ class User {
       address: data['address'],
       birthday: data['birthday'],
       name: Name.fromMap(data['name']),
+      phoneNumber: data['phoneNumber'] ?? '',
     );
   }
 
@@ -47,6 +72,7 @@ class User {
       'address': address,
       'birthday': birthday,
       'name': name?.toJson(),
+      'phoneNumber': phoneNumber,
     };
   }
 

@@ -90,6 +90,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
         await FirebaseFirestore.instance.collection('user_information').doc(userInfoId).update(data);
 
+        // Update global variables after successful update
+        global.user!.name = global.Name(first: firstName, last: lastName);
+        global.user!.address = addressController.text;
+        global.user!.birthday = birthdayController.text;
+
         // Successfully updated, navigate back and refresh
         Navigator.pop(context, true); // Pass true to indicate changes were made
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile updated successfully!')));
@@ -100,8 +105,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       print('Error updating user information: $e'); // Log error details
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
     }
-  }
-
+}
   DateTime _parseDate(String dateStr) {
     try {
       DateFormat format = DateFormat("M/d/yyyy"); // Adjust format as needed
