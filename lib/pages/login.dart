@@ -55,7 +55,6 @@ class _StateLogin extends State<Login> {
 
         print('Login successful: ${responseData['message']}');
         await setGlobals(responseData);
-
       } else {
         // Login failed
         final errorData = jsonDecode(response.body);
@@ -130,13 +129,10 @@ class _StateLogin extends State<Login> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Trash 2 Cash',
-                style: TextStyle(
-                  fontSize: 32.0,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  fontWeight: FontWeight.bold,
-                ),
+              CircleAvatar(
+                backgroundImage: AssetImage(
+                    'assets/logo.png'), // Replace with your logo image path
+                radius: 100.0, // Adjust the radius as needed
               ),
               const SizedBox(height: 20),
               Container(
