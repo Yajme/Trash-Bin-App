@@ -108,7 +108,8 @@ class _RedemptionPageState extends State<RedemptionPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/user');
+            Navigator.pop(context);
+            //Navigator.pushReplacementNamed(context, '/user');
           },
         ),
       ),
